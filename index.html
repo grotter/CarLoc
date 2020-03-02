@@ -1,0 +1,252 @@
+
+<html>
+
+    <head>
+
+        <title>Prius</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, maximum-scale=1.0" />
+
+        <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+        <link rel="manifest" href="site.webmanifest">
+        <link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+
+        <style type="text/css">
+
+            @keyframes fade {
+                0% {
+                    transform: scale3d(1, 1, 1);
+                }
+                100% {
+                    transform: scale3d(1.2, 1.2, 1);
+                }
+            }
+
+            body {
+                font-family: 'Helvetica', sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #e0e0e0;
+                color: #ffffff;
+            }
+
+            #info {
+                z-index: 2;
+                box-sizing: border-box;
+                position: absolute;
+
+                background-color: #ffffff;
+                color: #000000;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, .5);
+                padding: 20px;
+
+                
+                left: 8px;
+                right: 8px;
+                top: 10px;
+                border-radius: 8px;
+
+                transition: opacity .4s ease-out, transform .3s ease-out;
+                -webkit-transition: opacity .4s ease-out, transform .3s ease-out;
+                opacity: .75;
+                transform: translate3d(0, 0, 0);
+            }
+
+            .interacting #info {
+                opacity: 0;
+                transform: translate3d(0, -30px, 0);
+            }
+
+            #info h1,
+            #info p {
+                font-size: 16px;
+                margin: 0;
+                margin-bottom: 5px;
+                padding: 0;
+            }
+
+            #info h1 {
+                font-size: 20px;
+                padding-bottom: 10px;
+            }
+
+            #info p:last-child {
+                margin-bottom: 0;
+                padding-bottom: 0;
+                border: 0;
+            }
+
+            #info p {
+                background: no-repeat url('time.svg');
+                background-size: 24px 24px;
+                min-height: 24px;
+                padding-left: 30px;
+                padding-top: 1px;
+            }
+
+            #info p.cleaning_info {
+                background-image: url('today.svg');
+            }
+
+            #map {
+                z-index: 1;
+                border: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            .marker {
+                opacity: .7;
+                background-color: #ffffff;
+                box-shadow: 0px 0px 10px #000000;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                cursor: pointer;
+            }
+
+            .marker .inner {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background-color: blue;
+                margin-left: 5px;
+                margin-top: 5px;
+                animation: fade .75s ease-in alternate infinite;
+            }
+
+            .mapboxgl-ctrl-attrib,
+            .mapboxgl-ctrl-logo {
+                display: none !important;
+            }
+
+        </style>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.js'></script>
+        <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.css' rel='stylesheet' />
+    
+    </head>
+
+    <body id="body">
+        <div id="info">
+            <h1 id="addr"></h1>
+            <div id="sign"></div>
+        </div>
+
+        <div id="map"></div>
+
+        <script type="text/javascript">
+
+            function getQueryString (name) {
+                function parseParams() {
+                    var params = {},
+                        e,
+                        a = /\+/g,
+                        r = /([^&=]+)=?([^&]*)/g,
+                        d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
+                        q = window.location.search.substring(1);
+
+                    while (e = r.exec(q))
+                        params[d(e[1])] = d(e[2]);
+
+                    return params;
+                }
+
+                if (!this.queryStringParams)
+                    this.queryStringParams = parseParams();
+
+                return this.queryStringParams[name];
+            }
+
+            function getStreetSweeping (json) {
+               $.getJSON('https://api.xtreet.com/roads2/getnearesttolatlng/?longitude=' + json.longitude + '&latitude=' + json.latitude, function (response) {
+                    console.log(response);
+
+                    if ($.isArray(response.rows)) {
+                        var row = response.rows[0];
+                        
+                        if (row.properties) {
+                            if (row.properties.cleaning_info) {
+                                $('#sign').append('<p class="cleaning_info">' + row.properties.cleaning_info + '</p>');
+                            }
+                            if (row.properties.sign_info) {
+                                $('#sign').append('<p>' + row.properties.sign_info + '</p>');
+                            }
+                        }
+                    }
+               });
+            }
+
+            function getAddress (json) {
+                $.getJSON('https://api.mapbox.com/geocoding/v5/mapbox.places/' + json.longitude + ',' + json.latitude + '.json?access_token=' + mapboxgl.accessToken, function (response) {
+                    console.log(response);
+                    
+                    if ($.isArray(response.features)) {
+                        $.each(response.features, function (i, obj) {
+                            if (obj.place_type[0] == 'address') {
+                                console.log(obj);
+                                $('#addr').html(obj.address + ' ' + obj.text);
+                                return false;
+                            }
+                        });
+                    }
+                });
+            }
+
+            function init () {
+                // init map
+                $.getJSON('json/?vehicleId=' + getQueryString('vehicleId') + '&token=' + getQueryString('token'), function (json) {
+                    console.log(json);
+
+                    var coords = [json.longitude, json.latitude];
+
+                    var map = new mapboxgl.Map({
+                        container: 'map',
+                        center: coords,
+                        zoom: 17,
+                        style: 'mapbox://styles/mapbox/light-v10?optimize=true'
+                    });
+
+                    var el = document.createElement('div');
+                    el.innerHTML = '<div class="inner"></div>';
+                    el.className = 'marker';
+
+                    new mapboxgl.Marker(el).setLngLat(coords).addTo(map);
+
+                    getAddress(json);
+                    getStreetSweeping(json);
+                });
+                
+                // toggle legend
+                $('body').on('touchstart mousedown', function () {
+                    $(this).addClass('interacting');
+                });
+                
+                $('body').on('touchend mouseup', function () {
+                    $(this).removeClass('interacting');
+                });
+
+                // stay fresh
+                $(window).on('focus', function () {
+                    if ($('body').hasClass('hidden')) {
+                        window.location.reload();
+                    }
+                });
+
+                $(window).on('blur', function () {
+                    $('body').addClass('hidden');
+                });
+            }
+
+            mapboxgl.accessToken = getQueryString('mapbox_token');
+            init();
+
+        </script>
+    </body>
+
+</html>
