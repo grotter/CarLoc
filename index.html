@@ -223,12 +223,21 @@
                 });
                 
                 // toggle legend
+                var debounce = null;
+
                 $('body').on('touchstart mousedown', function () {
+                    clearTimeout(debounce);
                     $(this).addClass('interacting');
                 });
                 
+                
+
                 $('body').on('touchend mouseup', function () {
-                    $(this).removeClass('interacting');
+                    clearTimeout(debounce);
+                    
+                    debounce = setTimeout(function () {
+                        $('body').removeClass('interacting');
+                    }, 500);
                 });
 
                 // stay fresh
