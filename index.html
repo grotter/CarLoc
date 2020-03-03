@@ -17,6 +17,7 @@
 
         <link href='stylesheets/pantera.css' rel='stylesheet' />
         
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
         <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.js'></script>
         <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.0/mapbox-gl.css' rel='stylesheet' />
@@ -70,6 +71,8 @@
                             }
                         }
                     }
+
+                    $('body').addClass('with-street-info');
                });
             }
 
@@ -97,13 +100,32 @@
                             }
                         });
                     }
+
+                    $('body').addClass('with-geocoded');
                 });
+            }
+
+            function setDate (timestamp) {
+                var date = moment(timestamp);
+                if (!date.isValid()) return; 
+
+                var div = $('<div id="date" />');
+                div.html('Parked at <strong>' + date.format('dddd, MMMM Do, h:mma') + '</strong>');
+
+                $('body').append(div);
             }
 
             function init () {
                 // init map
                 $.getJSON('json/?vehicleId=' + getQueryString('vehicleId') + '&token=' + getQueryString('token'), function (json) {
                     console.log(json);
+
+                    if (json.error) {
+                        alert('There was a problem reading the Pulse: ' + json.error);
+                        return;
+                    }
+
+                    if (json.timestamp) setDate(json.timestamp);
 
                     var coords = [json.longitude, json.latitude];
 
