@@ -69,10 +69,14 @@ body {
     left: inherit;
     bottom: 10px;
 
-    @media screen and (max-width: 400px)  {
+    @media screen and (max-width: 600px)  {
         left: 8px;
-        font-size: 14px;
         text-align: center;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    @media screen and (max-width: 400px)  {
+        font-size: 14px;
     }
 }
 
