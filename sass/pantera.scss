@@ -20,12 +20,12 @@ body {
 
 #info,
 #date {
+    z-index: 2;
     left: 8px;
     right: 8px;
     top: 10px;
     @include border-radius(8px);
 
-    z-index: 2;
     box-sizing: border-box;
     position: absolute;
 
@@ -80,34 +80,36 @@ body {
     }
 }
 
-#info h1,
-#info p {
-    margin: 0;
-    margin-bottom: 5px;
-    padding: 0;
-}
+#info {
+    h1,
+    p {
+        margin: 0;
+        margin-bottom: 5px;
+        padding: 0;
+    }
 
-#info h1 {
-    font-size: 20px;
-    padding-bottom: 10px;
-}
+    h1 {
+        font-size: 20px;
+        padding-bottom: 10px;
+    }
 
-#info p:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border: 0;
-}
+    p {
+        background: no-repeat url('../time.svg');
+        @include background-size(24px 24px);
+        min-height: 24px;
+        padding-left: 30px;
+        padding-top: 1px;
 
-#info p {
-    background: no-repeat url('../time.svg');
-    @include background-size(24px 24px);
-    min-height: 24px;
-    padding-left: 30px;
-    padding-top: 1px;
-}
+        &.cleaning_info {
+            background-image: url('../today.svg');
+        }
 
-#info p.cleaning_info {
-    background-image: url('../today.svg');
+        &:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border: 0;
+        }
+    }
 }
 
 #map {
@@ -115,30 +117,30 @@ body {
     border: 0;
     width: 100%;
     height: 100%;
-}
 
-.marker {
-    opacity: .7;
-    background-color: #ffffff;
-    @include box-shadow(0px 0px 10px #000000);
-    width: 30px;
-    height: 30px;
-    
-    &, .inner {
-        @include border-radius(50%);
+    .marker {
+        opacity: .7;
+        background-color: #ffffff;
+        @include box-shadow(0px 0px 10px #000000);
+        width: 30px;
+        height: 30px;
+        
+        &, .inner {
+            @include border-radius(50%);
+        }
+
+        .inner {
+            width: 20px;
+            height: 20px;
+            background-color: blue;
+            margin-left: 5px;
+            margin-top: 5px;
+            @include animation(pulse .75s ease-in alternate infinite);
+        }
     }
-}
 
-.marker .inner {
-    width: 20px;
-    height: 20px;
-    background-color: blue;
-    margin-left: 5px;
-    margin-top: 5px;
-    @include animation(pulse .75s ease-in alternate infinite);
-}
-
-.mapboxgl-ctrl-attrib,
-.mapboxgl-ctrl-logo {
-    display: none !important;
+    .mapboxgl-ctrl-attrib,
+    .mapboxgl-ctrl-logo {
+        display: none !important;
+    }
 }
