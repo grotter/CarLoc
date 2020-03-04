@@ -42,7 +42,7 @@ body {
     @include opacity(0);
 
     .with-geocoded & {
-         @include opacity(.75);
+         @include opacity(.6);
     }
 
     .interacting & {

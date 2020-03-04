@@ -66,6 +66,17 @@
                             if (row.properties.cleaning_info) {
                                 $('#sign').append('<p class="cleaning_info">' + row.properties.cleaning_info + '</p>');
                             }
+
+                            if (row.properties.cleaning_time_start) {
+                                var date = moment.unix(row.properties.cleaning_time_start).utc();
+
+                                if (date.isValid()) {
+                                    // replace with formatted
+                                    $('#sign .cleaning_info').remove();
+                                    $('#sign').append('<p class="cleaning_info">Next street sweeping: <strong>' + date.format('dddd, MMMM Do, h:mma') + '</strong></p>');
+                                }
+                            }
+
                             if (row.properties.sign_info) {
                                 $('#sign').append('<p>' + row.properties.sign_info + '</p>');
                             }
