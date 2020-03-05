@@ -52,29 +52,49 @@ var Prius = function () {
        });
     }
 
+    var getFeature = function (type, features) {
+        var feature = false;
+
+        $.each(features, function (i, obj) {
+            if (obj.place_type[0] == type) {
+                feature = obj;
+                return false;
+            }
+        });
+
+        return feature;
+    }
+
     var getAddress = function (json) {
         $.getJSON('https://api.mapbox.com/geocoding/v5/mapbox.places/' + json.longitude + ',' + json.latitude + '.json?access_token=' + mapboxgl.accessToken, function (response) {
             console.log(response);
             
             if ($.isArray(response.features)) {
-                $.each(response.features, function (i, obj) {
-                    if (obj.place_type[0] == 'address') {
-                        console.log(obj);
+                // address
+                var obj = getFeature('address', response.features);
 
-                        var str = [];
+                if (obj) {
+                    console.log(obj);
+                    var str = [];
 
-                        if (obj.address) str.push(obj.address);
-                        if (obj.text) str.push(obj.text);
-                        
-                        if (str.length > 0) {
-                            $('#addr').html(str.join(' '));    
-                        } else {
-                            $('#addr').remove();
-                        }
-                        
-                        return false;
+                    if (obj.address) str.push(obj.address);
+                    if (obj.text) str.push(obj.text);
+                    
+                    if (str.length > 0) {
+                        $('#addr').html(str.join(' '));    
                     }
-                });
+                } else {
+                    // neighborhood
+                    obj = getFeature('neighborhood', response.features);
+                    
+                    if (obj && obj.text) {
+                        $('#addr').html(obj.text);
+                    }
+                }
+            }
+
+            if ($.trim($('#addr').text()) == '') {
+                $('#addr').remove();
             }
 
             $('body').addClass('with-geocoded');
