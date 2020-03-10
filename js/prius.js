@@ -66,7 +66,12 @@ var Prius = function () {
     }
 
     var getAddress = function (json) {
-        $.getJSON('https://api.mapbox.com/geocoding/v5/mapbox.places/' + json.longitude + ',' + json.latitude + '.json?access_token=' + mapboxgl.accessToken, function (response) {
+        var url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
+        url += json.longitude + ',' + json.latitude;
+        url += '.json?access_token=' + mapboxgl.accessToken;
+        url += '&nocache=' + Math.random();
+
+        $.getJSON(url, function (response) {
             console.log(response);
             
             if ($.isArray(response.features)) {
