@@ -116,6 +116,15 @@ var Prius = function () {
         $('body').append(div);
     }
 
+    var _error = function (title, msg) {
+        $('#info h1').html(title);
+        $('#info').append('<ul><li>' + msg + '</li></ul>');
+        
+        $('body').off();
+        $('body').removeClass('interacting');
+        $('body').addClass('error');   
+    }
+
     this.initialize = function () {
         mapboxgl.accessToken = getQueryString('mapbox_token');
 
@@ -123,8 +132,9 @@ var Prius = function () {
         $.getJSON('json/?vehicleId=' + getQueryString('vehicleId') + '&token=' + getQueryString('token'), function (json) {
             console.log(json);
 
-            if (json.error) {
-                alert('There was a problem reading the Pulse: ' + json.error);
+            if (!json.latitude || !json.longitude) {
+                var errorDetails = json.error ? json.error : 'Unknown server error';
+                _error('There was a problem reading the car&rsquo;s location!', errorDetails);
                 return;
             }
 

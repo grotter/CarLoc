@@ -42,7 +42,8 @@ body {
     @include transform(translate3d(0, 0, 0));
     @include opacity(0);
 
-    .with-geocoded.with-street-info & {
+    .with-geocoded.with-street-info &,
+    .error & {
          @include opacity(.6);
     }
 
@@ -92,6 +93,10 @@ body {
     h1 {
         font-size: 20px;
         padding-bottom: 10px;
+
+        .error & {
+            padding-bottom: 0;
+        }
     }
 
     p {
