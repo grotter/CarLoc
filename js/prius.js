@@ -111,7 +111,7 @@ var Prius = function () {
         if (!date.isValid()) return; 
 
         var div = $('<div id="date" />');
-        div.html('Parked at <strong>' + date.format('dddd, MMMM Do, h:mma') + '</strong>');
+        div.html('Updated <strong>' + date.format('dddd, MMMM Do, h:mma') + '</strong>');
 
         $('body').append(div);
     }
