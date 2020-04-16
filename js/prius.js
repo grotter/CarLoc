@@ -20,13 +20,31 @@ var Prius = function () {
         return this.queryStringParams[name];
     }
 
-    var getStreetSweeping = function (json) {
+    var getStreetSweeping = function (json, isSanCarlos) {
        $.getJSON('https://api.xtreet.com/roads2/getnearesttolatlng/?longitude=' + json.longitude + '&latitude=' + json.latitude, function (response) {
             console.log(response);
-
+            
             if ($.isArray(response.rows)) {
                 var row = response.rows[0];
                 
+                // make sure we have accurate data for San Carlos
+                if (isSanCarlos) {
+                    $.each(response.rows, function (i, obj) {
+                        if (obj.properties && obj.properties.cleaning_time_start) {
+                            var date = moment.unix(obj.properties.cleaning_time_start).utc();
+
+                            if (date.isValid()) {
+                                // Thursday
+                                if (date.day() == 4) {
+                                    row = obj;
+                                    return false;
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // populate info panel
                 if (row.properties) {
                     if (row.properties.cleaning_info) {
                         $('#sign').append('<p class="cleaning_info">' + row.properties.cleaning_info + '</p>');
@@ -74,6 +92,8 @@ var Prius = function () {
         $.getJSON(url, function (response) {
             console.log(response);
             
+            var isSanCarlos = false;
+
             if ($.isArray(response.features)) {
                 // address
                 var obj = getFeature('address', response.features);
@@ -83,7 +103,14 @@ var Prius = function () {
                     var str = [];
 
                     if (obj.address) str.push(obj.address);
-                    if (obj.text) str.push(obj.text);
+                    
+                    if (obj.text) {
+                        if (obj.text.indexOf('San Carlos') == 0) {
+                            isSanCarlos = true;
+                        }
+
+                        str.push(obj.text);
+                    }
                     
                     if (str.length > 0) {
                         $('#addr').html(str.join(' '));    
@@ -103,6 +130,8 @@ var Prius = function () {
             }
 
             $('body').addClass('with-geocoded');
+
+            getStreetSweeping(json, isSanCarlos);
         });
     }
 
@@ -158,7 +187,6 @@ var Prius = function () {
                 new mapboxgl.Marker(el).setLngLat(coords).addTo(map);
 
                 getAddress(json);
-                getStreetSweeping(json);
             });
         });
         
