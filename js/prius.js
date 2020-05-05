@@ -20,22 +20,21 @@ var Prius = function () {
         return this.queryStringParams[name];
     }
 
-    var getStreetSweeping = function (json, isSanCarlos) {
+    var getStreetSweeping = function (json, dayOfWeek) {
        $.getJSON('https://api.xtreet.com/roads2/getnearesttolatlng/?longitude=' + json.longitude + '&latitude=' + json.latitude, function (response) {
             console.log(response);
             
             if ($.isArray(response.rows)) {
                 var row = response.rows[0];
                 
-                // make sure we have accurate data for San Carlos
-                if (isSanCarlos) {
+                // make sure we have accurate data for exceptions
+                if (typeof(dayOfWeek) == 'number') {
                     $.each(response.rows, function (i, obj) {
                         if (obj.properties && obj.properties.cleaning_time_start) {
                             var date = moment.unix(obj.properties.cleaning_time_start).utc();
 
                             if (date.isValid()) {
-                                // Thursday
-                                if (date.day() == 4) {
+                                if (date.day() == dayOfWeek) {
                                     row = obj;
                                     return false;
                                 }
@@ -92,7 +91,7 @@ var Prius = function () {
         $.getJSON(url, function (response) {
             console.log(response);
             
-            var isSanCarlos = false;
+            var dayOfWeek = false;
 
             if ($.isArray(response.features)) {
                 // address
@@ -106,7 +105,10 @@ var Prius = function () {
                     
                     if (obj.text) {
                         if (obj.text.indexOf('San Carlos') == 0) {
-                            isSanCarlos = true;
+                            dayOfWeek = 4;
+                        }
+                        if (obj.text.indexOf('Lexington') == 0) {
+                            dayOfWeek = 2;
                         }
 
                         str.push(obj.text);
@@ -131,7 +133,7 @@ var Prius = function () {
 
             $('body').addClass('with-geocoded');
 
-            getStreetSweeping(json, isSanCarlos);
+            getStreetSweeping(json, dayOfWeek);
         });
     }
 
