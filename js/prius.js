@@ -66,7 +66,12 @@ var Prius = function () {
             }
 
             $('body').addClass('with-street-info');
-       });
+       	}).fail(function () {
+       		$('#sign .cleaning_info').remove();
+       		$('#sign').append('<p class="cleaning_info">Street sweeping data unavailable</p>');
+       		
+       		$('body').addClass('with-street-info');            	
+       	});
     }
 
     var getFeature = function (type, features) {
