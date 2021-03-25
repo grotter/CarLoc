@@ -12,7 +12,13 @@
 		if (is_null(json_decode($result))) {
 			echo json_encode(array('error' => 'JSON cannot be decoded'));
 		} else {
-			echo $result;
+			if (intval($_REQUEST['setCleaning'])) {
+				// @todo
+				// write alternate street sweeping time to flat .json
+				echo json_encode(array('success' => true));
+			} else {
+				echo $result;	
+			}
 		}
 	}
 

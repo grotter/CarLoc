@@ -1,4 +1,8 @@
 var Prius = function () {
+    var _selectedVal = 0;
+    var _dayOfWeek = false;
+    var _streetSweeping = [];
+
     var getQueryString = function (name) {
         function parseParams() {
             var params = {},
@@ -20,58 +24,114 @@ var Prius = function () {
         return this.queryStringParams[name];
     }
 
-    var getStreetSweeping = function (json, dayOfWeek) {
-       $.getJSON('https://api.xtreet.com/roads2/getnearesttolatlng/?longitude=' + json.longitude + '&latitude=' + json.latitude, function (response) {
-            console.log(response);
-            
-            if ($.isArray(response.rows)) {
-                var row = response.rows[0];
-                
-                // make sure we have accurate data for exceptions
-                if (typeof(dayOfWeek) == 'number') {
-                    $.each(response.rows, function (i, obj) {
-                        if (obj.properties && obj.properties.cleaning_time_start) {
-                            var date = moment.unix(obj.properties.cleaning_time_start).utc();
+    var _updateSignInfo = function (row) {
+        // populate info panel
+        if (row.properties) {
+            $('#sign').empty();
 
-                            if (date.isValid()) {
-                                if (date.day() == dayOfWeek) {
-                                    row = obj;
-                                    return false;
-                                }
-                            }
-                        }
-                    });
-                }
+            if (row.properties.cleaning_info) {
+                $('#sign').append('<p class="cleaning_info">' + row.properties.cleaning_info + '</p>');
+            }
 
-                // populate info panel
-                if (row.properties) {
-                    if (row.properties.cleaning_info) {
-                        $('#sign').append('<p class="cleaning_info">' + row.properties.cleaning_info + '</p>');
-                    }
+            if (row.properties.cleaning_time_start) {
+                var date = moment.unix(row.properties.cleaning_time_start).utc();
 
-                    if (row.properties.cleaning_time_start) {
-                        var date = moment.unix(row.properties.cleaning_time_start).utc();
-
-                        if (date.isValid()) {
-                            // replace with formatted
-                            $('#sign .cleaning_info').remove();
-                            $('#sign').append('<p class="cleaning_info">Next street sweeping: <strong>' + date.format('dddd, MMMM Do, h:mma') + '</strong></p>');
-                        }
-                    }
-
-                    if (row.properties.sign_info) {
-                        $('#sign').append('<p>' + row.properties.sign_info + '</p>');
-                    }
+                if (date.isValid()) {
+                    // replace with formatted
+                    $('#sign .cleaning_info').remove();
+                    $('#sign').append('<p class="cleaning_info">Next street sweeping: <span class="dropdown_container"></span></p>');
                 }
             }
 
-            $('body').addClass('with-street-info');
-       	}).fail(function () {
-       		$('#sign .cleaning_info').remove();
-       		$('#sign').append('<p class="cleaning_info">Street sweeping data unavailable</p>');
-       		
-       		$('body').addClass('with-street-info');            	
-       	});
+            if (row.properties.sign_info) {
+                $('#sign').append('<p>' + row.properties.sign_info + '</p>');
+            }
+        }
+    }
+
+    var _onDropdown = function () {
+        $(window).off('blur');
+
+        var selected = $(this).find(':selected');
+        var str = 'Switch street sweeping to ';
+        str += $.trim(selected.text());
+        str += '?';
+
+        if (confirm(str)) {
+            // @todo
+            // write json
+            console.log(selected.data('streetSweepingData'));
+            _selectedVal = $(this).val();
+        } else {
+            $(this).val(_selectedVal);
+        }
+
+        setTimeout(_setRefreshListener, 100);
+    }
+
+    var _insertUpdateDropdown = function () {
+        var select = $('<select />');
+        var times = [];
+
+        $.each(_streetSweeping, function (i, obj) {
+            if (obj.properties && obj.properties.cleaning_time_start) {
+                var t = obj.properties.cleaning_time_start;
+                if ($.inArray(t, times) >= 0) return true;
+
+                times.push(t);
+
+                var date = moment.unix(t).utc();
+
+                if (date.isValid()) {
+                    var option = $('<option>' + date.format('dddd, MMMM Do, h:mma') + '</option>');
+                    option.data('streetSweepingData', obj.properties);
+                    option.val(i);
+                    select.append(option);
+                }
+            }
+        });
+
+        select.on('change', _onDropdown);
+        $('.dropdown_container').append(select);
+    }
+
+    var _onStreetSweeping = function (response) {
+        console.log(response);
+
+        if ($.isArray(response.rows)) {
+            _streetSweeping = response.rows;
+            var row = _streetSweeping[_selectedVal];
+            
+            // make sure we have accurate data for exceptions
+            if (typeof(_dayOfWeek) == 'number') {
+                $.each(_streetSweeping, function (i, obj) {
+                    if (obj.properties && obj.properties.cleaning_time_start) {
+                        var date = moment.unix(obj.properties.cleaning_time_start).utc();
+
+                        if (date.isValid()) {
+                            if (date.day() == _dayOfWeek) {
+                                row = obj;
+                                return false;
+                            }
+                        }
+                    }
+                });
+            }
+
+            _updateSignInfo(row);
+            _insertUpdateDropdown();
+        }
+
+        $('body').addClass('with-street-info');
+    }
+
+    var getStreetSweeping = function (json) {
+        $.getJSON('https://api.xtreet.com/roads2/getnearesttolatlng/?longitude=' + json.longitude + '&latitude=' + json.latitude, _onStreetSweeping).fail(function () {
+            $('#sign .cleaning_info').remove();
+            $('#sign').append('<p class="cleaning_info">Street sweeping data unavailable</p>');
+
+            $('body').addClass('with-street-info');            	
+        });
     }
 
     var getFeature = function (type, features) {
@@ -96,7 +156,7 @@ var Prius = function () {
         $.getJSON(url, function (response) {
             console.log(response);
             
-            var dayOfWeek = false;
+            _dayOfWeek = false;
 
             if ($.isArray(response.features)) {
                 // address
@@ -110,10 +170,10 @@ var Prius = function () {
                     
                     if (obj.text) {
                         if (obj.text.indexOf('San Carlos') == 0) {
-                            dayOfWeek = 4;
+                            _dayOfWeek = 4;
                         }
                         if (obj.text.indexOf('Lexington') == 0) {
-                            dayOfWeek = 2;
+                            _dayOfWeek = 2;
                         }
 
                         str.push(obj.text);
@@ -138,7 +198,7 @@ var Prius = function () {
 
             $('body').addClass('with-geocoded');
 
-            getStreetSweeping(json, dayOfWeek);
+            getStreetSweeping(json);
         });
     }
 
@@ -159,6 +219,14 @@ var Prius = function () {
         $('body').off();
         $('body').removeClass('interacting');
         $('body').addClass('error');   
+    }
+
+    var _setRefreshListener = function () {
+        $(window).off('blur');
+
+        $(window).on('blur', function () {
+            $('body').addClass('hidden');
+        });
     }
 
     this.initialize = function () {
@@ -200,12 +268,12 @@ var Prius = function () {
         // toggle legend
         var debounce = null;
 
-        $('body').on('touchstart mousedown', function () {
+        $('#map').on('touchstart mousedown', function () {
             clearTimeout(debounce);
-            $(this).addClass('interacting');
+            $('body').addClass('interacting');
         });
         
-        $('body').on('touchend mouseup', function () {
+        $('#map').on('touchend mouseup', function () {
             clearTimeout(debounce);
             
             debounce = setTimeout(function () {
@@ -220,9 +288,7 @@ var Prius = function () {
             }
         });
 
-        $(window).on('blur', function () {
-            $('body').addClass('hidden');
-        });
+        _setRefreshListener();
     }
 
     this.initialize();
