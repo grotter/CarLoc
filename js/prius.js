@@ -1,4 +1,5 @@
 var Prius = function () {
+    var _locUrl = false;
     var _selectedVal = 0;
     var _dayOfWeek = false;
     var _streetSweeping = [];
@@ -52,18 +53,34 @@ var Prius = function () {
     var _onDropdown = function () {
         $(window).off('blur');
 
-        var selected = $(this).find(':selected');
+        var that = $(this);
+        var selected = that.find(':selected');
         var str = 'Switch street sweeping to ';
         str += $.trim(selected.text());
         str += '?';
 
+        var onFail = function () {
+            that.val(_selectedVal);
+        }
+
         if (confirm(str)) {
-            // @todo
-            // write json
-            console.log(selected.data('streetSweepingData'));
-            _selectedVal = $(this).val();
+            // write override json
+            var data = selected.data('streetSweepingData');
+
+            $.getJSON(_locUrl, {
+                override: JSON.stringify(data)
+            }, function (response) {
+                if (response.success) {
+                    console.log('successful override!');
+                    console.log(response);
+                    
+                    _selectedVal = that.val();      
+                } else {
+                    onFail();
+                }
+            }).fail(onFail);
         } else {
-            $(this).val(_selectedVal);
+            onFail();
         }
 
         setTimeout(_setRefreshListener, 100);
@@ -91,6 +108,7 @@ var Prius = function () {
             }
         });
 
+        select.val(_selectedVal);
         select.on('change', _onDropdown);
         $('.dropdown_container').append(select);
     }
@@ -110,6 +128,7 @@ var Prius = function () {
 
                         if (date.isValid()) {
                             if (date.day() == _dayOfWeek) {
+                                _selectedVal = i;
                                 row = obj;
                                 return false;
                             }
@@ -230,10 +249,11 @@ var Prius = function () {
     }
 
     this.initialize = function () {
+        _locUrl = 'json/?vehicleId=' + getQueryString('vehicleId') + '&token=' + getQueryString('token');
         mapboxgl.accessToken = getQueryString('mapbox_token');
 
         // init map
-        $.getJSON('json/?vehicleId=' + getQueryString('vehicleId') + '&token=' + getQueryString('token'), function (json) {
+        $.getJSON(_locUrl, function (json) {
             console.log(json);
 
             if (!json.latitude || !json.longitude) {

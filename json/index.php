@@ -9,14 +9,35 @@
 	if (is_null($result)) {
 	    echo json_encode(array('error' => 'Unknown error'));
 	} else {
-		if (is_null(json_decode($result))) {
+		$data = json_decode($result);
+
+		if (is_null($data)) {
 			echo json_encode(array('error' => 'JSON cannot be decoded'));
 		} else {
-			if (intval($_REQUEST['setCleaning'])) {
-				// @todo
+			$override = false;
+
+			if (isset($_REQUEST['override'])) {
+				$override = json_decode($_REQUEST['override']);
+			}
+
+			if (is_object($override)) {
 				// write alternate street sweeping time to flat .json
-				echo json_encode(array('success' => true));
+				$data->override = $override;
+
+				$success = false;
+
+				$h = fopen('override.json', 'w');
+
+				if ($h !== false) {
+					if (fwrite($h, json_encode($data)) !== false) {
+						$success = true;
+					}	
+				}
+				
+				fclose($h);
+				echo json_encode(array('success' => $success, 'data' => $data));
 			} else {
+				// return location data
 				echo $result;	
 			}
 		}
