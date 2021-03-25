@@ -1,5 +1,6 @@
 var Prius = function () {
     var _locUrl = false;
+    var _overrideData = false;
     var _selectedVal = 0;
     var _dayOfWeek = false;
     var _streetSweeping = [];
@@ -137,6 +138,20 @@ var Prius = function () {
                 });
             }
 
+            // override
+            if (typeof(_overrideData) == 'object') {
+                $.each(_streetSweeping, function (i, obj) {
+                    if (obj.properties && obj.properties.cleaning_time_start) {
+                        if (obj.properties.cleaning_time_start == _overrideData.cleaning_time_start) {
+                            console.log('setting override…');
+                            _selectedVal = i;
+                            row = obj;
+                            return false;
+                        }
+                    }
+                });
+            }
+
             _updateSignInfo(row);
             _insertUpdateDropdown();
         }
@@ -145,12 +160,35 @@ var Prius = function () {
     }
 
     var getStreetSweeping = function (json) {
-        $.getJSON('https://api.xtreet.com/roads2/getnearesttolatlng/?longitude=' + json.longitude + '&latitude=' + json.latitude, _onStreetSweeping).fail(function () {
+        var onError = function () {
             $('#sign .cleaning_info').remove();
             $('#sign').append('<p class="cleaning_info">Street sweeping data unavailable</p>');
+            $('body').addClass('with-street-info'); 
+        };
 
-            $('body').addClass('with-street-info');            	
-        });
+        var getFresh = function () {
+            $.getJSON('https://api.xtreet.com/roads2/getnearesttolatlng/', json, _onStreetSweeping).fail(onError);
+        }
+
+        _overrideData = false;
+
+        // first check if we have an override
+        $.getJSON('json/override.json', function (r) {
+            console.log(r);
+
+            if (r.latitude == json.latitude && r.longitude == json.longitude) {
+                // location match
+                var t = moment.unix(r.override.cleaning_time_start);
+                t.subtract('minutes', moment().utcOffset());
+
+                if (t.isAfter()) {
+                    // not expired, override
+                    _overrideData = r.override;  
+                }
+            }
+
+            getFresh();
+        }).fail(getFresh);
     }
 
     var getFeature = function (type, features) {
