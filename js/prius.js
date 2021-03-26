@@ -143,7 +143,7 @@ var Prius = function () {
                 $.each(_streetSweeping, function (i, obj) {
                     if (obj.properties && obj.properties.cleaning_time_start) {
                         if (obj.properties.cleaning_time_start == _overrideData.cleaning_time_start) {
-                            console.log('setting override…');
+                            console.log('setting override');
                             _selectedVal = i;
                             row = obj;
                             return false;
@@ -179,7 +179,7 @@ var Prius = function () {
             if (r.latitude == json.latitude && r.longitude == json.longitude) {
                 // location match
                 var t = moment.unix(r.override.cleaning_time_start);
-                t.subtract('minutes', moment().utcOffset());
+                t.subtract(moment().utcOffset(), 'minutes');
 
                 if (t.isAfter()) {
                     // not expired, override
