@@ -173,7 +173,7 @@ var Prius = function () {
         _overrideData = false;
 
         // first check if we have an override
-        $.getJSON('json/override.json', function (r) {
+        $.getJSON('json/override.json?nocache=' + Math.random(), function (r) {
             console.log(r);
 
             if (r.latitude == json.latitude && r.longitude == json.longitude) {
