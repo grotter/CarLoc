@@ -169,7 +169,7 @@ var Prius = function () {
 
         var getFresh = function () {
             $.getJSON('https://api.xtreet.com/roads2/getnearesttolatlng/', json, _onStreetSweeping).fail(onError);
-        }
+        };
 
         _overrideData = false;
 
@@ -179,10 +179,7 @@ var Prius = function () {
 
             if (r.latitude == json.latitude && r.longitude == json.longitude) {
                 // location match
-                var t = moment.unix(r.override.cleaning_time_start);
-                t.subtract(moment().utcOffset(), 'minutes');
-
-                if (t.isAfter()) {
+                if (r.override.cleaning_time_start > moment().unix()) {
                     // not expired, override
                     _overrideData = r.override;  
                 }
