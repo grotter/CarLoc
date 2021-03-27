@@ -3,6 +3,7 @@ var Prius = function () {
     var _overrideData = false;
     var _selectedVal = 0;
     var _dayOfWeek = false;
+    var _streets = [];
     var _streetSweeping = [];
 
     var getQueryString = function (name) {
@@ -226,12 +227,12 @@ var Prius = function () {
                     if (obj.address) str.push(obj.address);
                     
                     if (obj.text) {
-                        if (obj.text.indexOf('San Carlos') == 0) {
-                            _dayOfWeek = 4;
-                        }
-                        if (obj.text.indexOf('Lexington') == 0) {
-                            _dayOfWeek = 2;
-                        }
+                        // override with customization
+                        $.each(_streets, function (i, street) {
+                            if (obj.text.indexOf(street.needle) == 0) {
+                                _dayOfWeek = street.sweepDay;
+                            }    
+                        });
 
                         str.push(obj.text);
                     }
@@ -286,7 +287,7 @@ var Prius = function () {
         });
     }
 
-    this.initialize = function () {
+    var _start = function () {
         _locUrl = 'json/?vehicleId=' + getQueryString('vehicleId') + '&token=' + getQueryString('token');
         mapboxgl.accessToken = getQueryString('mapbox_token');
 
@@ -347,6 +348,18 @@ var Prius = function () {
         });
 
         _setRefreshListener();
+    }
+
+    this.initialize = function () {
+        // load street customizations
+        $.getJSON('json/streets.json', function (response) {
+            if ($.isArray(response)) {
+                console.log(response);
+                _streets = response;
+            }
+
+            _start();
+        }).fail(_start);
     }
 
     this.initialize();
