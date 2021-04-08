@@ -29,7 +29,7 @@ var Prius = function () {
 
     var _updateSignInfo = function (row) {
         // populate info panel
-        if (row.properties) {
+        if (row && row.properties) {
             $('#sign').empty();
 
             if (row.properties.cleaning_info) {
@@ -49,6 +49,8 @@ var Prius = function () {
             if (row.properties.sign_info) {
                 $('#sign').append('<p>' + row.properties.sign_info + '</p>');
             }
+        } else {
+            $('#sign').append('<p>Street sweeping data unavailable</p>');
         }
     }
 
