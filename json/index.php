@@ -26,7 +26,7 @@
 
 				$success = false;
 
-				$h = fopen('override.json', 'w');
+				$h = fopen('override-' . trim($_REQUEST['vehicleId']) . '.json', 'w');
 
 				if ($h !== false) {
 					if (fwrite($h, json_encode($data)) !== false) {
