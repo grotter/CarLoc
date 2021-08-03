@@ -177,7 +177,7 @@ var Prius = function () {
         _overrideData = false;
 
         // first check if we have an override
-        $.getJSON('json/override-' + _vehicleId + '.json?nocache=' + Math.random(), function (r) {
+        $.getJSON('../json/override-' + _vehicleId + '.json?nocache=' + Math.random(), function (r) {
             console.log(r);
 
             if (r.latitude == json.latitude && r.longitude == json.longitude) {
@@ -288,7 +288,7 @@ var Prius = function () {
     }
 
     var _start = function () {
-        _locUrl = 'json/?vehicleId=' + _vehicleId + '&token=' + getQueryString('token');
+        _locUrl = '../json/?vehicleId=' + _vehicleId + '&token=' + getQueryString('token');
         mapboxgl.accessToken = getQueryString('mapbox_token');
 
         // init map
@@ -354,7 +354,7 @@ var Prius = function () {
         _vehicleId = getQueryString('vehicleId');
 
         // load street customizations
-        $.getJSON('json/streets.json', function (response) {
+        $.getJSON('../json/streets.json', function (response) {
             if ($.isArray(response)) {
                 console.log(response);
                 _streets = response;
