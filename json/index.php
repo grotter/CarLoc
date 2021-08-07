@@ -2,7 +2,24 @@
 
 	error_reporting(0);
 
-	$result = shell_exec('curl -H \'Accept: application/json\' -H \'Pragma: no-cache\' -H \'Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\' -H \'authorization: OAuth oauth_timestamp="1582569454", oauth_nonce="289ee67d-a9bb-4666-8252-4532c895d0db", oauth_version="1.0", oauth_consumer_key="dashboard", oauth_signature_method="HMAC-SHA1", oauth_token="' . escapeshellarg($_REQUEST['token']) . '", oauth_signature="b0xANj2WtJOdzyurzpu9Yby0v7Q%3D"\' --compressed \'https://www.metromile.com/dds/segment/lastLocation?vehicleId=' . escapeshellarg($_REQUEST['vehicleId']) . '\'');
+	$credentialsPath = '/home/g/gr/grotter/notify/credentials.php';
+
+	if (!file_exists($credentialsPath)) {
+		$credentialsPath = '/Users/grotter/notify/credentials.php';
+	}
+
+	require($credentialsPath);
+
+	$config = array();
+
+	foreach ($credentials as $credential) {
+		if ($credential['vehicleId'] == $_REQUEST['vehicleId']) {
+			$config = $credential;
+			break;
+		}
+	}
+
+	$result = shell_exec('curl -H \'Accept: application/json\' -H \'Pragma: no-cache\' -H \'Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\' -H \'authorization: OAuth oauth_timestamp="' . $config['timestamp'] . '", oauth_nonce="' . $config['nonce'] . '", oauth_version="1.0", oauth_consumer_key="dashboard", oauth_signature_method="HMAC-SHA1", oauth_token="' . escapeshellarg($_REQUEST['token']) . '", oauth_signature="' . $config['signature'] . '"\' --compressed \'https://www.metromile.com/dds/segment/lastLocation?vehicleId=' . escapeshellarg($_REQUEST['vehicleId']) . '\'');
 	
 	header('Content-type: application/json');
 	
