@@ -140,7 +140,7 @@ body {
     height: 100%;
 
     .marker {
-        opacity: .7;
+        @include opacity(.7);
         background-color: #ffffff;
         @include box-shadow(0px 0px 10px #000000);
         width: 30px;
@@ -157,6 +157,18 @@ body {
             margin-left: 5px;
             margin-top: 5px;
             @include animation(pulse .75s ease-in alternate infinite);
+        }
+
+        p {
+            @include opacity(.8);
+            color: #000000;
+            position: absolute;
+            width: 200px;
+            text-align: center;
+            font-weight: bold;
+            left: (100px - 15px) * -1;
+            top: 24px;
+            @include text-shadow(0px 0px 5px #ffffff);
         }
     }
 

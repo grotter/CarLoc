@@ -315,7 +315,7 @@ var Prius = function () {
 
             map.once('load', function () {
                 var el = document.createElement('div');
-                el.innerHTML = '<div class="inner"></div>';
+                el.innerHTML = '<div class="inner"></div><p>' + $('title').html() + '</p>';
                 el.className = 'marker';
 
                 new mapboxgl.Marker(el).setLngLat(coords).addTo(map);

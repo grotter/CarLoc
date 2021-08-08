@@ -192,7 +192,8 @@ body, body select {
 }
 /* line 142, ../sass/pantera.scss */
 #map .marker {
-  opacity: .7;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
+  opacity: 0.7;
   background-color: #ffffff;
   -moz-box-shadow: 0px 0px 10px #000000;
   -webkit-box-shadow: 0px 0px 10px #000000;
@@ -217,7 +218,20 @@ body, body select {
   -webkit-animation: pulse 0.75s ease-in alternate infinite;
   animation: pulse 0.75s ease-in alternate infinite;
 }
-/* line 163, ../sass/pantera.scss */
+/* line 162, ../sass/pantera.scss */
+#map .marker p {
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+  opacity: 0.8;
+  color: #000000;
+  position: absolute;
+  width: 200px;
+  text-align: center;
+  font-weight: bold;
+  left: -85px;
+  top: 24px;
+  text-shadow: 0px 0px 5px #ffffff;
+}
+/* line 175, ../sass/pantera.scss */
 #map .mapboxgl-ctrl-attrib,
 #map .mapboxgl-ctrl-logo {
   display: none !important;
