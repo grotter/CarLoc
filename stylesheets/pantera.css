@@ -32,25 +32,68 @@
     transform: scale3d(1.2, 1.2, 1);
   }
 }
-/* line 12, ../sass/pantera.scss */
+@-moz-keyframes pulseBg {
+  0% {
+    -moz-background-size: 100px 100px;
+    background-size: 100px 100px;
+  }
+  100% {
+    -moz-background-size: 120px 120px;
+    background-size: 120px 120px;
+  }
+}
+@-webkit-keyframes pulseBg {
+  0% {
+    -webkit-background-size: 100px 100px;
+    background-size: 100px 100px;
+  }
+  100% {
+    -webkit-background-size: 120px 120px;
+    background-size: 120px 120px;
+  }
+}
+@keyframes pulseBg {
+  0% {
+    -moz-background-size: 100px 100px;
+    -o-background-size: 100px 100px;
+    -webkit-background-size: 100px 100px;
+    background-size: 100px 100px;
+  }
+  100% {
+    -moz-background-size: 120px 120px;
+    -o-background-size: 120px 120px;
+    -webkit-background-size: 120px 120px;
+    background-size: 120px 120px;
+  }
+}
+/* line 21, ../sass/pantera.scss */
 *:focus {
   outline: none;
 }
 
-/* line 16, ../sass/pantera.scss */
+/* line 25, ../sass/pantera.scss */
 body {
   margin: 0;
   padding: 0;
-  background-color: #f6f6f4;
+  background-color: #ffffff;
   color: #ffffff;
+  background-position: center center;
+  -moz-background-size: 100px 100px;
+  -o-background-size: 100px 100px;
+  -webkit-background-size: 100px 100px;
+  background-size: 100px 100px;
+  background-repeat: no-repeat;
+  -moz-animation: pulseBg 0.4s ease-in alternate infinite;
+  -webkit-animation: pulseBg 0.4s ease-in alternate infinite;
+  animation: pulseBg 0.4s ease-in alternate infinite;
 }
-/* line 17, ../sass/pantera.scss */
+/* line 26, ../sass/pantera.scss */
 body, body select {
   font-family: 'Helvetica', sans-serif;
   font-size: 16px;
 }
 
-/* line 28, ../sass/pantera.scss */
+/* line 42, ../sass/pantera.scss */
 #info,
 #date {
   z-index: 2;
@@ -79,21 +122,21 @@ body, body select {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
   opacity: 0;
 }
-/* line 52, ../sass/pantera.scss */
+/* line 66, ../sass/pantera.scss */
 .with-geocoded.with-street-info #info, .error #info, .with-geocoded.with-street-info
 #date, .error
 #date {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
   opacity: 0.6;
 }
-/* line 57, ../sass/pantera.scss */
+/* line 71, ../sass/pantera.scss */
 .interacting.with-geocoded.with-street-info #info, .interacting.with-geocoded.with-street-info
 #date {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
   opacity: 0;
 }
 
-/* line 63, ../sass/pantera.scss */
+/* line 77, ../sass/pantera.scss */
 .interacting #info {
   -moz-transform: translate3d(0, -50px, 0);
   -ms-transform: translate3d(0, -50px, 0);
@@ -101,19 +144,19 @@ body, body select {
   transform: translate3d(0, -50px, 0);
 }
 @media screen and (min-width: 800px) {
-  /* line 62, ../sass/pantera.scss */
+  /* line 76, ../sass/pantera.scss */
   #info {
     max-width: 500px;
   }
 }
 
-/* line 72, ../sass/pantera.scss */
+/* line 86, ../sass/pantera.scss */
 #date {
   top: inherit;
   left: inherit;
   bottom: 10px;
 }
-/* line 73, ../sass/pantera.scss */
+/* line 87, ../sass/pantera.scss */
 .interacting #date {
   -moz-transform: translate3d(0, 50px, 0);
   -ms-transform: translate3d(0, 50px, 0);
@@ -121,7 +164,7 @@ body, body select {
   transform: translate3d(0, 50px, 0);
 }
 @media screen and (max-width: 600px) {
-  /* line 72, ../sass/pantera.scss */
+  /* line 86, ../sass/pantera.scss */
   #date {
     left: 8px;
     text-align: center;
@@ -130,29 +173,29 @@ body, body select {
   }
 }
 @media screen and (max-width: 400px) {
-  /* line 72, ../sass/pantera.scss */
+  /* line 86, ../sass/pantera.scss */
   #date {
     font-size: 14px;
   }
 }
 
-/* line 93, ../sass/pantera.scss */
+/* line 107, ../sass/pantera.scss */
 #info h1,
 #info p {
   margin: 0;
   margin-bottom: 5px;
   padding: 0;
 }
-/* line 100, ../sass/pantera.scss */
+/* line 114, ../sass/pantera.scss */
 #info h1 {
   font-size: 20px;
   padding-bottom: 10px;
 }
-/* line 104, ../sass/pantera.scss */
+/* line 118, ../sass/pantera.scss */
 .error #info h1 {
   padding-bottom: 0;
 }
-/* line 109, ../sass/pantera.scss */
+/* line 123, ../sass/pantera.scss */
 #info p {
   background: no-repeat url("../time.svg");
   -moz-background-size: 24px 24px;
@@ -163,17 +206,17 @@ body, body select {
   padding-left: 30px;
   padding-top: 1px;
 }
-/* line 116, ../sass/pantera.scss */
+/* line 130, ../sass/pantera.scss */
 #info p.cleaning_info {
   background-image: url("../today.svg");
 }
-/* line 120, ../sass/pantera.scss */
+/* line 134, ../sass/pantera.scss */
 #info p:last-child {
   margin-bottom: 0;
   padding-bottom: 0;
   border: 0;
 }
-/* line 127, ../sass/pantera.scss */
+/* line 141, ../sass/pantera.scss */
 #info select {
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -183,14 +226,14 @@ body, body select {
   color: #000000;
 }
 
-/* line 136, ../sass/pantera.scss */
+/* line 150, ../sass/pantera.scss */
 #map {
   z-index: 1;
   border: 0;
   width: 100%;
   height: 100%;
 }
-/* line 142, ../sass/pantera.scss */
+/* line 156, ../sass/pantera.scss */
 #map .marker {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
   opacity: 0.7;
@@ -201,13 +244,13 @@ body, body select {
   width: 30px;
   height: 30px;
 }
-/* line 149, ../sass/pantera.scss */
+/* line 163, ../sass/pantera.scss */
 #map .marker, #map .marker .inner {
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
   border-radius: 50%;
 }
-/* line 153, ../sass/pantera.scss */
+/* line 167, ../sass/pantera.scss */
 #map .marker .inner {
   width: 20px;
   height: 20px;
@@ -218,7 +261,7 @@ body, body select {
   -webkit-animation: pulse 0.75s ease-in alternate infinite;
   animation: pulse 0.75s ease-in alternate infinite;
 }
-/* line 162, ../sass/pantera.scss */
+/* line 176, ../sass/pantera.scss */
 #map .marker p {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
   opacity: 0.8;
@@ -231,7 +274,7 @@ body, body select {
   top: 24px;
   text-shadow: 0px 0px 5px #ffffff;
 }
-/* line 175, ../sass/pantera.scss */
+/* line 189, ../sass/pantera.scss */
 #map .mapboxgl-ctrl-attrib,
 #map .mapboxgl-ctrl-logo {
   display: none !important;

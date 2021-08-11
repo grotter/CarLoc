@@ -9,6 +9,15 @@
     }
 };
 
+@include keyframes (pulseBg) {
+    0% {
+        @include background-size(100px 100px);
+    }
+    100% {
+        @include background-size(120px 120px);
+    }
+};
+
 *:focus {
     outline: none;
 }
@@ -21,8 +30,13 @@ body {
 
     margin: 0;
     padding: 0;
-    background-color: #f6f6f4;
+    background-color: #ffffff;
     color: #ffffff;
+
+    background-position: center center;
+    @include background-size(100px 100px);
+    background-repeat: no-repeat;
+    @include animation(pulseBg .4s ease-in alternate infinite);
 }
 
 #info,
