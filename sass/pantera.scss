@@ -127,6 +127,10 @@ body {
         padding-left: 30px;
         padding-top: 1px;
 
+        .no-touch & {
+            padding-top: 3px;
+        }
+
         &.cleaning_info {
             background-image: url('../today.svg');
         }
@@ -144,6 +148,7 @@ body {
         border: 0;
         font-weight: bold;
         color: #000000;
+        background-color: #ffffff;
     }
 }
 

@@ -351,6 +351,12 @@ var Prius = function () {
     }
 
     this.initialize = function () {
+        if ('ontouchstart' in window) {
+            $('html').addClass('touch');
+        } else {
+            $('html').addClass('no-touch');
+        }
+
         _vehicleId = getQueryString('vehicleId');
 
         // load street customizations
