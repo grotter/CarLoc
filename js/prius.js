@@ -205,6 +205,16 @@ var Prius = function () {
         return feature;
     }
 
+    var getFuel = function () {
+        $.getJSON(_locUrl + '&fuel=1', function (json) {
+            if (typeof(json.currentFuelLevelPercent) == 'number') {
+                console.log('Current fuel level: ' + json.currentFuelLevelPercent + '%');
+            } else {
+                console.log('Fuel level unavailable');
+            }
+        });
+    }
+
     var getAddress = function (json) {
         var url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
         url += json.longitude + ',' + json.latitude;
@@ -321,6 +331,7 @@ var Prius = function () {
                 new mapboxgl.Marker(el).setLngLat(coords).addTo(map);
 
                 getAddress(json);
+                getFuel();
             });
         });
         
