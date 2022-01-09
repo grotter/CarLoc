@@ -211,6 +211,8 @@ var Prius = function () {
 
     var getFuel = function () {
         $.getJSON(_locUrl + '&fuel=1', function (json) {
+            console.log(json);
+
             if (typeof(json.currentFuelLevelPercent) == 'number') {
                 $('#sign').append('<p class="fuel">Fuel level: <strong>' + Math.round(json.currentFuelLevelPercent) + '%</strong></p>');
             } else {
