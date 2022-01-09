@@ -18,9 +18,20 @@
     }
 };
 
+@include keyframes (fadein) {
+    0% {
+        @include opacity(0);
+    }
+    100% {
+        @include opacity(1);
+    }
+};
+
 *:focus {
     outline: none;
 }
+
+$easing: cubic-bezier(.215, .61, .355, 1);
 
 body {
     &, select {
@@ -121,8 +132,8 @@ body {
     }
 
     p {
-        background: no-repeat url('../time.svg');
         @include background-size(24px 24px);
+        background: no-repeat url('../time.svg');
         min-height: 24px;
         padding-left: 30px;
         padding-top: 1px;
@@ -133,6 +144,12 @@ body {
 
         &.cleaning_info {
             background-image: url('../today.svg');
+        }
+
+        &.fuel {
+            @include opacity(0);
+            @include animation(fadein .6s $easing forwards);
+            background-image: url('../fuel.svg');
         }
 
         &:last-child {

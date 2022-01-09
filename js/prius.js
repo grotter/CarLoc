@@ -53,6 +53,8 @@ var Prius = function () {
         } else {
             $('#sign').append('<p>Street sweeping data unavailable</p>');
         }
+
+        getFuel();
     }
 
     var _onDropdown = function () {
@@ -167,7 +169,9 @@ var Prius = function () {
         var onError = function () {
             $('#sign .cleaning_info').remove();
             $('#sign').append('<p class="cleaning_info">Street sweeping data unavailable</p>');
-            $('body').addClass('with-street-info'); 
+            $('body').addClass('with-street-info');
+
+            getFuel(); 
         };
 
         var getFresh = function () {
@@ -208,7 +212,7 @@ var Prius = function () {
     var getFuel = function () {
         $.getJSON(_locUrl + '&fuel=1', function (json) {
             if (typeof(json.currentFuelLevelPercent) == 'number') {
-                console.log('Current fuel level: ' + json.currentFuelLevelPercent + '%');
+                $('#sign').append('<p class="fuel">Fuel level: <strong>' + Math.round(json.currentFuelLevelPercent) + '%</strong></p>');
             } else {
                 console.log('Fuel level unavailable');
             }
@@ -331,7 +335,6 @@ var Prius = function () {
                 new mapboxgl.Marker(el).setLngLat(coords).addTo(map);
 
                 getAddress(json);
-                getFuel();
             });
         });
         
