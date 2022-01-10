@@ -1,4 +1,4 @@
-A web app for viewing car location and street sweeping data using a [Metromile Pulse](https://www.metromile.com/blog/pulse-device/) device. Works with [PriusNotify](https://github.com/grotter/PriusNotify/) for custom notifications and overrides.
+A web app for viewing car location, street sweeping data and fuel levels (when available) using a [Metromile Pulse](https://www.metromile.com/blog/pulse-device/) device. Works with [CarNotify](https://github.com/grotter/CarNotify/) for custom notifications and overrides.
 
 ### GET parameters
 
