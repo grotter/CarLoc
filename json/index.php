@@ -2,9 +2,10 @@
 
 	error_reporting(0);
 	header('Content-type: application/json');
+	header('Access-Control-Allow-Origin: *');
 
 	function getCredentials ($vehicleId, $token, $isFuel) {
-		$credentialsPath = '/home/g/gr/grotter/notify/credentials.php';
+		$credentialsPath = '/private/grotter/notify/credentials.php';
 
 		if (!file_exists($credentialsPath)) {
 			$credentialsPath = '/Users/grotter/notify/credentials.php';
@@ -38,10 +39,27 @@
 	if (!$credentials) {
 		die(json_encode(array('error' => 'Unknown error')));
 	}
-
-	$result = shell_exec('curl -H \'Accept: application/json\' -H \'Pragma: no-cache\' -H \'Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\' -H \'authorization: OAuth oauth_timestamp="' . $credentials['timestamp'] . '", oauth_nonce="' . $credentials['nonce'] . '", oauth_version="1.0", oauth_consumer_key="dashboard", oauth_signature_method="HMAC-SHA1", oauth_token="' . $credentials['token'] . '", oauth_signature="' . $credentials['signature'] . '"\' --compressed \'' . $endpoint . '?vehicleId=' . escapeshellarg($_REQUEST['vehicleId']) . '\'');
 	
-	if (is_null($result)) {
+	$url = $endpoint . '?vehicleId=' . urlencode($_REQUEST['vehicleId']);
+
+	$headers = array(
+    	'Authorization: OAuth oauth_timestamp="' . $credentials['timestamp'] . '", oauth_nonce="' . $credentials['nonce'] . '", oauth_version="1.0", oauth_consumer_key="dashboard", oauth_signature_method="HMAC-SHA1", oauth_token="' . $credentials['token'] . '", oauth_signature="' . $credentials['signature'],
+    	'Accept: application/json',
+    	'Pragma: no-cache',
+    	'Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
+    );
+
+	$opts = array(
+		'http' => array(
+			'method' => 'GET',
+			'header' => implode("\r\n", $headers)
+		)
+	);
+
+	$context = stream_context_create($opts);
+	$result = file_get_contents($url, false, $context);
+
+	if (!$result) {
 	    echo json_encode(array('error' => 'Unknown error'));
 	} else {
 		$data = json_decode($result);

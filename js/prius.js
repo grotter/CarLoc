@@ -304,7 +304,9 @@ var Prius = function () {
     }
 
     var _start = function () {
-        _locUrl = '../json/?vehicleId=' + _vehicleId + '&token=' + getQueryString('token');
+        _locUrl = 'https://utility.calacademy.org/grotter/carloc/';
+        _locUrl += '?vehicleId=' + _vehicleId + '&token=' + getQueryString('token');
+        
         mapboxgl.accessToken = getQueryString('mapbox_token');
 
         // init map
