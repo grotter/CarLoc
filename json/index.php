@@ -4,7 +4,10 @@
 	header('Content-type: application/json');
 	header('Access-Control-Allow-Origin: *');
 
-	function getOverride ($vehicleId) {
+	function getOverride ($vehicleId, $token) {
+		$c = getCredentials($vehicleId, $token, false);
+		if ($c === false) return false;
+		
 		return file_get_contents('override/' . $vehicleId . '.json');
 	}
 
@@ -34,7 +37,7 @@
 	$isGetOverride = isset($_REQUEST['getoverride']);
 
 	if ($isGetOverride) {
-		$json = getOverride($_REQUEST['vehicleId']);
+		$json = getOverride($_REQUEST['vehicleId'], $_REQUEST['token']);
 		
 		if ($json === false) {
 			echo json_encode(array('error' => 'Unknown error'));
