@@ -4,6 +4,10 @@
 	header('Content-type: application/json');
 	header('Access-Control-Allow-Origin: *');
 
+	function getOverride ($vehicleId) {
+		return file_get_contents('override/' . $vehicleId . '.json');
+	}
+
 	function getCredentials ($vehicleId, $token, $isFuel) {
 		$credentialsPath = '/private/grotter/notify/credentials.php';
 
@@ -25,6 +29,20 @@
 		}
 
 		return $c;
+	}
+
+	$isGetOverride = isset($_REQUEST['getoverride']);
+
+	if ($isGetOverride) {
+		$json = getOverride($_REQUEST['vehicleId']);
+		
+		if ($json === false) {
+			echo json_encode(array('error' => 'Unknown error'));
+		} else {
+			echo $json;
+		}
+		
+		die;
 	}
 
 	$isFuel = isset($_REQUEST['fuel']);
@@ -79,12 +97,12 @@
 
 				$success = false;
 
-				$h = fopen('override-' . trim($_REQUEST['vehicleId']) . '.json', 'w');
+				$h = fopen('override/' . trim($_REQUEST['vehicleId']) . '.json', 'w');
 
 				if ($h !== false) {
 					if (fwrite($h, json_encode($data)) !== false) {
 						$success = true;
-					}	
+					}
 				}
 				
 				fclose($h);

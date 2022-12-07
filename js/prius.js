@@ -1,6 +1,6 @@
 var Prius = function () {
+    var _locUrl = 'https://utility.calacademy.org/grotter/carloc/';
     var _vehicleId = 0;
-    var _locUrl = false;
     var _overrideData = false;
     var _selectedVal = 0;
     var _dayOfWeek = false;
@@ -74,7 +74,7 @@ var Prius = function () {
             // write override json
             var data = selected.data('streetSweepingData');
 
-            $.getJSON(_locUrl, {
+            $.getJSON(getEndpoint(), {
                 override: JSON.stringify(data)
             }, function (response) {
                 if (response.success) {
@@ -181,7 +181,9 @@ var Prius = function () {
         _overrideData = false;
 
         // first check if we have an override
-        $.getJSON('../json/override-' + _vehicleId + '.json?nocache=' + Math.random(), function (r) {
+        $.getJSON(getEndpoint({
+            getoverride: 1
+        }), function (r) {
             console.log(r);
 
             if (r.latitude == json.latitude && r.longitude == json.longitude) {
@@ -209,8 +211,25 @@ var Prius = function () {
         return feature;
     }
 
+    var getEndpoint = function (obj) {
+        if (!obj) obj = {};
+        var endpoint = _locUrl;
+        
+        var myParams = Object.assign(obj, {
+            vehicleId: _vehicleId,
+            token: getQueryString('token')
+        });
+
+        var params = new URLSearchParams(myParams);
+
+        endpoint += '?' + params.toString();
+        return endpoint;
+    }
+
     var getFuel = function () {
-        $.getJSON(_locUrl + '&fuel=1', function (json) {
+        $.getJSON(getEndpoint({
+            fuel: 1
+        }), function (json) {
             console.log(json);
 
             if (typeof(json.currentFuelLevelPercent) == 'number') {
@@ -303,14 +322,11 @@ var Prius = function () {
         });
     }
 
-    var _start = function () {
-        _locUrl = 'https://utility.calacademy.org/grotter/carloc/';
-        _locUrl += '?vehicleId=' + _vehicleId + '&token=' + getQueryString('token');
-        
+    var _start = function () {        
         mapboxgl.accessToken = getQueryString('mapbox_token');
 
         // init map
-        $.getJSON(_locUrl, function (json) {
+        $.getJSON(getEndpoint(), function (json) {
             console.log(json);
 
             if (!json.latitude || !json.longitude) {
