@@ -1,5 +1,7 @@
 var Prius = function () {
     var _locUrl = 'https://utility.calacademy.org/grotter/carloc/';
+    // var _locUrl = 'https://playground.rotter.org/prius/json/';
+    
     var _vehicleId = 0;
     var _overrideData = false;
     var _selectedVal = 0;

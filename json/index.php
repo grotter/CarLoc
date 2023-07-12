@@ -4,6 +4,26 @@
 	header('Content-type: application/json');
 	header('Access-Control-Allow-Origin: *');
 
+	function curlRequest ($url, $headers) {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+
+		$result = curl_exec($ch);
+
+		if (curl_errno($ch)) {
+		    // echo curl_error($ch);
+		    curl_close($ch);
+		    return false;
+		}
+
+		curl_close($ch);
+		return $result;
+	}
+
 	function getOverride ($vehicleId, $token) {
 		$c = getCredentials($vehicleId, $token, false);
 		if ($c === false) return false;
@@ -38,7 +58,7 @@
 
 	if ($isGetOverride) {
 		$json = getOverride($_REQUEST['vehicleId'], $_REQUEST['token']);
-		
+
 		if ($json === false) {
 			echo json_encode(array('error' => 'Unknown error'));
 		} else {
@@ -64,21 +84,13 @@
 	$url = $endpoint . '?vehicleId=' . urlencode($_REQUEST['vehicleId']);
 
 	$headers = array(
-    	'Authorization: OAuth oauth_timestamp="' . $credentials['timestamp'] . '", oauth_nonce="' . $credentials['nonce'] . '", oauth_version="1.0", oauth_consumer_key="dashboard", oauth_signature_method="HMAC-SHA1", oauth_token="' . $credentials['token'] . '", oauth_signature="' . $credentials['signature'],
-    	'Accept: application/json',
+    	'Authorization: OAuth oauth_timestamp="' . $credentials['timestamp'] . '", oauth_nonce="' . $credentials['nonce'] . '", oauth_version="1.0", oauth_consumer_key="dashboard", oauth_signature_method="HMAC-SHA1", oauth_token="' . $credentials['token'] . '", oauth_signature="' . $credentials['signature'] . '"',
+    	'Accept: application/json, text/plain, */*',
     	'Pragma: no-cache',
     	'Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
     );
 
-	$opts = array(
-		'http' => array(
-			'method' => 'GET',
-			'header' => implode("\r\n", $headers)
-		)
-	);
-
-	$context = stream_context_create($opts);
-	$result = file_get_contents($url, false, $context);
+	$result = curlRequest($url, $headers);
 
 	if (!$result) {
 	    echo json_encode(array('error' => 'Unknown error'));
