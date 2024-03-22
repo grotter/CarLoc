@@ -1,5 +1,5 @@
 var Prius = function () {
-    var _locUrl = 'https://utility.calacademy.org/grotter/carloc/';
+    var _locUrl = 'https://antifascistscience.club/grotter/carloc/';
     // var _locUrl = 'https://playground.rotter.org/prius/json/';
     
     var _vehicleId = 0;
